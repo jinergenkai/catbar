@@ -1,3 +1,21 @@
+# Catbar
+- Tauri + Rust (backend) + React/Vue (frontend)
+- Three.js: 3D models + camera control để render sprites
+- GSAP/Framer Motion: Smooth animations
+- Canvas API: Lightweight drawing cho effects
+
+// Rust backend
+- Serde: JSON serialization cho cat data
+- SQLite: Local storage cho experiences
+- Tokio: Async cho smooth interactions
+
+Cat Behavior Engine
+javascript// Frontend
+- State machines cho cat personalities  
+- Simple ML.js cho learning patterns
+- Procedural animation blending
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
