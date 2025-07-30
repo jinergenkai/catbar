@@ -6,9 +6,9 @@ import './App.css'
 function App() {
   return (
     <HashRouter>
-      <div style={{ position: 'fixed', top: 10, right: 10, zIndex: 9999 }}>
+      {/* <div style={{ position: 'fixed', top: 10, right: 10, zIndex: 9999 }}>
         <NavButton />
-      </div>
+      </div> */}
       <Routes>
         <Route path="/main" element={<MainScreen />} />
         <Route path="/settings" element={<SettingsScreen />} />

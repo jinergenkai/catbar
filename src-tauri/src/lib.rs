@@ -1,5 +1,5 @@
-mod win32;
 mod overlay;
+mod win32;
 
 use tauri::{window, LogicalPosition};
 // Thêm các import cần thiết cho command
@@ -31,10 +31,10 @@ pub fn run() {
             .shadow(false)
             .transparent(true) // nếu bạn muốn nền trong suốt
             // .always_on_top(true)
-            .minimizable(true)
+            .minimizable(false)
             .resizable(true)
-            .skip_taskbar(false)
-            .inner_size(800.0, get_taskbar_height().unwrap_or(40) as f64)
+            .skip_taskbar(true)
+            .inner_size(400.0, get_taskbar_height().unwrap_or(40) as f64)
             .position(0.0, 1080.0 - 120.0)
             .visible(true)
             .build()?;
@@ -42,22 +42,22 @@ pub fn run() {
                 #[cfg(target_os = "windows")]
                 {
                     if let Ok(hwnd) = window.hwnd() {
-                      println!("Setting topmost for window: {:?}", hwnd);
-                                      overlay::setup_overlay(hwnd.0 as *mut _)?;
-                      // overlay::create_high_priority_overlay(hwnd.0);
-                      // overlay::set_system_topmost_priority(hwnd.0);
+                        println!("Setting topmost for window: {:?}", hwnd);
+                        overlay::setup_smart_overlay(hwnd.0 as *mut _)?;
+                        // overlay::create_high_priority_overlay(hwnd.0);
+                        // overlay::set_system_topmost_priority(hwnd.0);
                         // win32::force_topmost(hwnd.0);
                     }
                 }
             }
             // Second window mở route /settings
-            WebviewWindowBuilder::new(
-                app,
-                "settings",
-                tauri::WebviewUrl::App("index.html#/settings".into()),
-            )
-            .title("Settings")
-            .build()?;
+            // WebviewWindowBuilder::new(
+            //     app,
+            //     "settings",
+            //     tauri::WebviewUrl::App("index.html#/settings".into()),
+            // )
+            // .title("Settings")
+            // .build()?;
 
             if let Some(window) = app.get_webview_window("catbar") {
                 let _ = window.move_window(Position::BottomLeft);

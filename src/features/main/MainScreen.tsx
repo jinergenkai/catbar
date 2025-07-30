@@ -4,8 +4,16 @@ import CatSprite from '@/components/cat/CatSprite';
 export default function MainScreen() {
   // TODO: Thêm logic on top taskbar, minimize
   return (
-    <div style={{ width: '100vw', height: '100vh', background: 'transparent' }}>
-      123
+    <div style={{
+      background: 'transparent',
+      width: '100%',
+      height: '40px',
+      overflow: 'hidden',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0
+    }}>
       <CatSprite />
     </div>
   );
