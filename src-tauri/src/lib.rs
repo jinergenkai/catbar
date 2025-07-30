@@ -1,4 +1,5 @@
 mod win32;
+mod overlay;
 
 use tauri::{window, LogicalPosition};
 // Thêm các import cần thiết cho command
@@ -22,14 +23,14 @@ pub fn run() {
             // First window mở route /main
             WebviewWindowBuilder::new(
                 app,
-                "first",
+                "catbar",
                 tauri::WebviewUrl::App("index.html#/main".into()),
             )
             .title("Cat Bar")
             .decorations(false)
             .shadow(false)
             .transparent(true) // nếu bạn muốn nền trong suốt
-            .always_on_top(true)
+            // .always_on_top(true)
             .minimizable(true)
             .resizable(true)
             .skip_taskbar(false)
@@ -37,16 +38,28 @@ pub fn run() {
             .position(0.0, 1080.0 - 120.0)
             .visible(true)
             .build()?;
+            if let Some(window) = app.get_webview_window("catbar") {
+                #[cfg(target_os = "windows")]
+                {
+                    if let Ok(hwnd) = window.hwnd() {
+                      println!("Setting topmost for window: {:?}", hwnd);
+                                      overlay::setup_overlay(hwnd.0 as *mut _)?;
+                      // overlay::create_high_priority_overlay(hwnd.0);
+                      // overlay::set_system_topmost_priority(hwnd.0);
+                        // win32::force_topmost(hwnd.0);
+                    }
+                }
+            }
             // Second window mở route /settings
             WebviewWindowBuilder::new(
                 app,
-                "second",
+                "settings",
                 tauri::WebviewUrl::App("index.html#/settings".into()),
             )
-            .title("Second")
+            .title("Settings")
             .build()?;
 
-            if let Some(window) = app.get_webview_window("first") {
+            if let Some(window) = app.get_webview_window("catbar") {
                 let _ = window.move_window(Position::BottomLeft);
             }
             let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -64,7 +77,7 @@ pub fn run() {
                     } => {
                         println!("left click pressed and released");
                         let app = tray.app_handle();
-                        if let Some(window) = app.get_webview_window("first") {
+                        if let Some(window) = app.get_webview_window("catbar") {
                             let _ = window.move_window(Position::BottomLeft);
                             let _ = window.show();
                             // window.set_position(LogicalPosition::new(0.0, 960.0));
