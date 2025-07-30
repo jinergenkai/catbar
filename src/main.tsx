@@ -1,4 +1,4 @@
-import "./components/Tray";
+// import "./components/Tray";
  
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
