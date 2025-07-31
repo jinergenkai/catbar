@@ -26,7 +26,7 @@ pub fn run() {
                 "catbar",
                 tauri::WebviewUrl::App("index.html#/main".into()),
             )
-            .title("Cat Bar")
+            // .title("Cat Bar")
             .decorations(false)
             .shadow(false)
             .transparent(true) // nếu bạn muốn nền trong suốt
@@ -34,7 +34,7 @@ pub fn run() {
             .minimizable(false)
             .resizable(true)
             .skip_taskbar(true)
-            .inner_size(400.0, get_taskbar_height().unwrap_or(40) as f64)
+            .inner_size(400.0, get_taskbar_height().unwrap_or(40) as f64 + 100.0)
             .position(0.0, 1080.0 - 120.0)
             .visible(true)
             .build()?;
@@ -51,13 +51,13 @@ pub fn run() {
                 }
             }
             // Second window mở route /settings
-            // WebviewWindowBuilder::new(
-            //     app,
-            //     "settings",
-            //     tauri::WebviewUrl::App("index.html#/settings".into()),
-            // )
-            // .title("Settings")
-            // .build()?;
+            WebviewWindowBuilder::new(
+                app,
+                "settings",
+                tauri::WebviewUrl::App("index.html#/settings".into()),
+            )
+            .title("settings")
+            .build()?;
 
             if let Some(window) = app.get_webview_window("catbar") {
                 let _ = window.move_window(Position::BottomLeft);

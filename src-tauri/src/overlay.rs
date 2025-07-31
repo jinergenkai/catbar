@@ -35,20 +35,20 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
 
        // 1. Set window styles để hoàn toàn invisible với system
         // let current_style = GetWindowLongW(APP_HWND, GWL_STYLE);
-        SetWindowLongW(APP_HWND, GWL_STYLE, 
-            WS_POPUP as i32 | WS_VISIBLE as i32); // Chỉ POPUP + VISIBLE
+        // SetWindowLongW(APP_HWND, GWL_STYLE, 
+        //     WS_POPUP as i32 | WS_VISIBLE as i32); // Chỉ POPUP + VISIBLE
             
-        let current_ex_style = GetWindowLongW(APP_HWND, GWL_EXSTYLE);
-        SetWindowLongW(APP_HWND, GWL_EXSTYLE, 
-            current_ex_style | 
-            WS_EX_TOPMOST as i32 |      // Luôn on top
-            WS_EX_NOACTIVATE as i32 |   // Không steal focus
-            WS_EX_TOOLWINDOW as i32 |   // Ẩn khỏi taskbar và Alt+Tab
-            WS_EX_LAYERED as i32        // Cho phép transparency effects
-        );
+        // let current_ex_style = GetWindowLongW(APP_HWND, GWL_EXSTYLE);
+        // SetWindowLongW(APP_HWND, GWL_EXSTYLE, 
+        //     current_ex_style | 
+        //     WS_EX_TOPMOST as i32 |      // Luôn on top
+        //     WS_EX_NOACTIVATE as i32 |   // Không steal focus
+        //     WS_EX_TOOLWINDOW as i32 |   // Ẩn khỏi taskbar và Alt+Tab
+        //     WS_EX_LAYERED as i32        // Cho phép transparency effects
+        // );
         
         // 2. Set transparency (có thể điều chỉnh)
-        SetLayeredWindowAttributes(APP_HWND, 0, 200, LWA_ALPHA); // 255 = opaque
+        // SetLayeredWindowAttributes(APP_HWND, 0, 255, LWA_ALPHA); // Đặt opacity tối đa để hiển thị rõ UI
         
         SetWindowPos(APP_HWND, HWND_TOPMOST, 0, 0, 0, 0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);

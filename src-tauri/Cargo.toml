@@ -40,3 +40,6 @@ windows-sys = { version = "0.59", features = [
 
 [package.metadata.windows.manifest]
 path = "manifest.xml"
+
+[target."cfg(target_os = \"macos\")".dependencies]
+cocoa = "0.26"

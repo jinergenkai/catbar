@@ -10,8 +10,8 @@ export default function CatSprite() {
       transform: 'translateX(-50%)',
       pointerEvents: 'none',
       maxWidth: '100%',
-      height: '100%',
-      maxHeight: '40px',
+      height: '200%',
+      maxHeight: '80px',
       objectFit: 'contain',
       margin: 0,
       padding: 0
