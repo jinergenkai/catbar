@@ -1,9 +1,8 @@
-// Trang setting cho widget
 import SettingsPanel from '@/components/settings/SettingsPanel';
 
 export default function SettingsScreen() {
   return (
-    <div>
+    <div className="h-screen bg-background">
       <SettingsPanel />
     </div>
   );
