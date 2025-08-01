@@ -34,7 +34,7 @@ pub fn run() {
             .minimizable(false)
             .resizable(true)
             .skip_taskbar(true)
-            .inner_size(400.0, get_taskbar_height().unwrap_or(40) as f64 + 100.0)
+            .inner_size(600.0, get_taskbar_height().unwrap_or(40) as f64 + 100.0)
             .position(0.0, 1080.0 - 120.0)
             .visible(true)
             .build()?;

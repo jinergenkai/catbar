@@ -15,58 +15,52 @@ export default function InterfaceSettings() {
     <div id="interface" className="space-y-4">
       <h2 className="text-2xl font-semibold mb-4">Giao diện</h2>
 
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon icon="mingcute:button-line" className="w-5 h-5 text-blue-500" />
-            Hiển thị nút
-          </CardTitle>
-          <CardDescription>Tùy chỉnh hiển thị các nút chức năng</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon icon="mingcute:music-line" className="w-4 h-4 text-purple-500" />
-              <Label>Nút nhạc</Label>
+      <Card className="hover:shadow-lg transition-shadow p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon icon="mingcute:music-line" className="w-5 h-5 text-purple-500" />
+            <div>
+              <div className="font-medium">Nút nhạc</div>
+              <div className="text-sm text-muted-foreground">Hiển thị nút điều khiển nhạc</div>
             </div>
-            <Switch 
-              checked={showMusicButton}
-              onCheckedChange={setShowMusicButton}
-            />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon icon="mingcute:function-line" className="w-4 h-4 text-green-500" />
-              <Label>Nút tính năng</Label>
-            </div>
-            <Switch 
-              checked={showFeatureButton}
-              onCheckedChange={setShowFeatureButton}
-            />
-          </div>
-        </CardContent>
+          <Switch
+            checked={showMusicButton}
+            onCheckedChange={setShowMusicButton}
+          />
+        </div>
       </Card>
 
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon icon="mingcute:notification-line" className="w-5 h-5 text-yellow-500" />
-            Thông báo
-          </CardTitle>
-          <CardDescription>Tùy chỉnh cài đặt thông báo</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon icon="mingcute:notification-fill" className="w-4 h-4 text-yellow-500" />
-              <Label>Bật thông báo</Label>
+      <Card className="hover:shadow-lg transition-shadow p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon icon="mingcute:function-line" className="w-5 h-5 text-green-500" />
+            <div>
+              <div className="font-medium">Nút tính năng</div>
+              <div className="text-sm text-muted-foreground">Hiển thị nút truy cập tính năng</div>
             </div>
-            <Switch 
-              checked={notificationsEnabled}
-              onCheckedChange={setNotificationsEnabled}
-            />
           </div>
-        </CardContent>
+          <Switch
+            checked={showFeatureButton}
+            onCheckedChange={setShowFeatureButton}
+          />
+        </div>
+      </Card>
+
+      <Card className="hover:shadow-lg transition-shadow p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon icon="mingcute:notification-line" className="w-5 h-5 text-yellow-500" />
+            <div>
+              <div className="font-medium">Thông báo</div>
+              <div className="text-sm text-muted-foreground">Tùy chỉnh cài đặt thông báo</div>
+            </div>
+          </div>
+          <Switch
+            checked={notificationsEnabled}
+            onCheckedChange={setNotificationsEnabled}
+          />
+        </div>
       </Card>
     </div>
   );

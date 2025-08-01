@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface SettingsStore {
   // Resize bar
@@ -10,10 +11,14 @@ interface SettingsStore {
   showFeatureButton: boolean;
   setShowMusicButton: (show: boolean) => void;
   setShowFeatureButton: (show: boolean) => void;
+// Theme
+theme: 'dark' | 'light' | 'system';
+setTheme: (theme: 'dark' | 'light' | 'system') => void;
 
-  // Language
-  language: 'vi' | 'en';
-  setLanguage: (lang: 'vi' | 'en') => void;
+// Language
+language: 'vi' | 'en';
+setLanguage: (lang: 'vi' | 'en') => void;
+
 
   // Notifications
   notificationsEnabled: boolean;
@@ -42,7 +47,9 @@ interface SettingsStore {
   setStartWithWindows: (enabled: boolean) => void;
 }
 
-export const useSettingsStore = create<SettingsStore>((set) => ({
+export const useSettingsStore = create<SettingsStore>()(
+  persist(
+    (set) => ({
   // Resize bar
   barSize: 50,
   setBarSize: (size) => set({ barSize: size }),
@@ -52,6 +59,11 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   showFeatureButton: true,
   setShowMusicButton: (show) => set({ showMusicButton: show }),
   setShowFeatureButton: (show) => set({ showFeatureButton: show }),
+
+  // Language
+  // Theme
+  theme: 'system',
+  setTheme: (theme) => set({ theme }),
 
   // Language
   language: 'vi',
@@ -82,4 +94,6 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   // Startup with Windows
   startWithWindows: false,
   setStartWithWindows: (enabled) => set({ startWithWindows: enabled }),
+}), {
+  name: 'settings-storage',
 }));
