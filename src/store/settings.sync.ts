@@ -1,5 +1,6 @@
 import { emit, listen } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
+import { enable, disable, isEnabled } from '@tauri-apps/plugin-autostart';
 
 import { create } from 'zustand';
 
@@ -41,6 +42,12 @@ let store: Awaited<ReturnType<typeof load>>;
 // Khởi tạo store và đăng ký listener
 export async function initSettings() {
   store = await load('settings.json');
+
+  // Kiểm tra trạng thái autostart
+  const autoStartEnabled = await isEnabled();
+  if (autoStartEnabled !== defaultSettings.startWithWindows) {
+    await setSetting('startWithWindows', autoStartEnabled);
+  }
   
   // Lắng nghe sự thay đổi từ các window khác
   listen('setting-changed', async (event: any) => {
@@ -75,6 +82,17 @@ async function setSetting<K extends keyof Settings>(key: K, value: Settings[K]) 
   await store.set(key, value);
   await store.save();
   
+  // Xử lý autostart khi setting thay đổi
+  if (key === 'startWithWindows') {
+    if (value) {
+      await enable();
+      console.log('Autostart enabled');
+    } else {
+      await disable();
+      console.log('Autostart disabled');
+    }
+  }
+
   // Cập nhật local state
   const currentState = useSettings.getState();
   useSettings.setState({ settings: { ...currentState.settings, [key]: value } });

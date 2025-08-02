@@ -14,6 +14,10 @@ use win32::{get_bottom_position, get_taskbar_height};
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            Some(vec!["--flag1", "--flag2"]),
+        ))
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
@@ -21,17 +25,16 @@ pub fn run() {
             win32::get_bottom_position
         ])
         .setup(|app| {
-            // First window mở route /main
             WebviewWindowBuilder::new(
                 app,
                 "catbar",
-                tauri::WebviewUrl::App("http://localhost:6470/#/main".into()),
+                tauri::WebviewUrl::App("index.html#/main".into()),
             )
-            // .title("Cat Bar")
+            .title("Cat Bar")
             .decorations(false)
             .shadow(false)
-            .transparent(true) // nếu bạn muốn nền trong suốt
-            // .always_on_top(true)
+            .transparent(true)
+            .always_on_top(true)
             .minimizable(false)
             .resizable(true)
             .skip_taskbar(false)
@@ -55,7 +58,7 @@ pub fn run() {
             WebviewWindowBuilder::new(
                 app,
                 "settings",
-                tauri::WebviewUrl::App("http://localhost:6470/#/settings".into()),
+                tauri::WebviewUrl::App("index.html#/settings".into()),
             )
             .title("settings")
             .build()?;

@@ -5,7 +5,7 @@ import { moveWindow, Position } from '@tauri-apps/plugin-positioner';
 function onTrayMenuClick(itemId: string) {
   if (itemId === "settings") {
     moveWindow(Position.TrayCenter);
-    window.__TAURI__.window.getCurrent().show();
+    // window.__TAURI__.window.getCurrent().show();
   }
 }
 
@@ -29,5 +29,5 @@ const options = {
   menuOnLeftClick: true,
 };
 
-const tray = await TrayIcon.new(options);
+await TrayIcon.new(options);
 
