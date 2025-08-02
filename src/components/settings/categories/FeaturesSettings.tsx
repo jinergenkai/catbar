@@ -1,17 +1,17 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Icon } from "@iconify/react";
-import { useSettingsStore } from "@/store/settingsStore";
+import { useSettings } from "@/store/settings.sync";
 
 export default function FeaturesSettings() {
   const {
-    weatherEnabled, setWeatherEnabled,
-    vocabularyEnabled, setVocabularyEnabled,
-    wordsPerDay, setWordsPerDay,
-    pomodoroMinutes, setPomodoroMinutes,
-  } = useSettingsStore();
+    settings,
+    setWeatherEnabled,
+    setVocabularyEnabled,
+    setWordsPerDay,
+    setPomodoroMinutes,
+  } = useSettings();
 
   return (
     <div id="features" className="space-y-4 mb-8">
@@ -27,7 +27,7 @@ export default function FeaturesSettings() {
             </div>
           </div>
           <Switch
-            checked={weatherEnabled}
+            checked={settings.weatherEnabled}
             onCheckedChange={setWeatherEnabled}
           />
         </div>
@@ -44,12 +44,12 @@ export default function FeaturesSettings() {
           </div>
           <div className="flex flex-col items-end gap-4">
             <Switch
-              checked={vocabularyEnabled}
+              checked={settings.vocabularyEnabled}
               onCheckedChange={setVocabularyEnabled}
             />
-            {vocabularyEnabled && (
+            {settings.vocabularyEnabled && (
               <Slider
-                value={[wordsPerDay]}
+                value={[settings.wordsPerDay]}
                 onValueChange={([value]) => setWordsPerDay(value)}
                 max={20}
                 step={1}
@@ -70,7 +70,7 @@ export default function FeaturesSettings() {
             </div>
           </div>
           <Slider
-            value={[pomodoroMinutes]}
+            value={[settings.pomodoroMinutes]}
             onValueChange={([value]) => setPomodoroMinutes(value)}
             max={60}
             step={5}

@@ -14,6 +14,7 @@ use win32::{get_bottom_position, get_taskbar_height};
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_positioner::init())
         .invoke_handler(tauri::generate_handler![
             win32::get_taskbar_height,
@@ -24,7 +25,7 @@ pub fn run() {
             WebviewWindowBuilder::new(
                 app,
                 "catbar",
-                tauri::WebviewUrl::App("index.html#/main".into()),
+                tauri::WebviewUrl::App("http://localhost:6470/#/main".into()),
             )
             // .title("Cat Bar")
             .decorations(false)
@@ -33,7 +34,7 @@ pub fn run() {
             // .always_on_top(true)
             .minimizable(false)
             .resizable(true)
-            .skip_taskbar(true)
+            .skip_taskbar(false)
             .inner_size(600.0, get_taskbar_height().unwrap_or(40) as f64 + 100.0)
             .position(0.0, 1080.0 - 120.0)
             .visible(true)
@@ -54,7 +55,7 @@ pub fn run() {
             WebviewWindowBuilder::new(
                 app,
                 "settings",
-                tauri::WebviewUrl::App("index.html#/settings".into()),
+                tauri::WebviewUrl::App("http://localhost:6470/#/settings".into()),
             )
             .title("settings")
             .build()?;

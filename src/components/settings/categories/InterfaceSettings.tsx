@@ -1,15 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Icon } from "@iconify/react";
-import { useSettingsStore } from "@/store/settingsStore";
+import { useSettings } from "@/store/settings.sync";
 
 export default function InterfaceSettings() {
   const {
-    showMusicButton, setShowMusicButton,
-    showFeatureButton, setShowFeatureButton,
-    notificationsEnabled, setNotificationsEnabled,
-  } = useSettingsStore();
+    settings,
+    setShowMusicButton,
+    setShowFeatureButton,
+    setNotificationsEnabled,
+  } = useSettings();
 
   return (
     <div id="interface" className="space-y-4">
@@ -25,7 +25,7 @@ export default function InterfaceSettings() {
             </div>
           </div>
           <Switch
-            checked={showMusicButton}
+            checked={settings.showMusicButton}
             onCheckedChange={setShowMusicButton}
           />
         </div>
@@ -41,7 +41,7 @@ export default function InterfaceSettings() {
             </div>
           </div>
           <Switch
-            checked={showFeatureButton}
+            checked={settings.showFeatureButton}
             onCheckedChange={setShowFeatureButton}
           />
         </div>
@@ -57,7 +57,7 @@ export default function InterfaceSettings() {
             </div>
           </div>
           <Switch
-            checked={notificationsEnabled}
+            checked={settings.notificationsEnabled}
             onCheckedChange={setNotificationsEnabled}
           />
         </div>

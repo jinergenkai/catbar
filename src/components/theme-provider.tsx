@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { useSettingsStore } from "@/store/settingsStore"
+import { useSettings } from "@/store/settings.sync"
 
 type Theme = "dark" | "light" | "system"
 
@@ -26,8 +26,8 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   // Sync with settings store
-  const storeTheme = useSettingsStore(state => state.theme)
-  const setStoreTheme = useSettingsStore(state => state.setTheme)
+  const storeTheme = useSettings(state => state.settings.theme)
+  const setStoreTheme = useSettings(state => state.setTheme)
 
   const [theme, setTheme] = useState<Theme>(
     () => storeTheme || defaultTheme

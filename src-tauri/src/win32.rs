@@ -2,9 +2,9 @@
 pub fn get_taskbar_height() -> Option<i32> {
     #[cfg(target_os = "windows")]
     {
-        use windows_sys::Win32::UI::WindowsAndMessaging::{SystemParametersInfoW, SPI_GETWORKAREA};
         use windows_sys::Win32::Foundation::RECT;
-        use windows_sys::Win32::Graphics::Gdi::{GetDeviceCaps, GetDC, ReleaseDC, VERTRES};
+        use windows_sys::Win32::Graphics::Gdi::{GetDC, GetDeviceCaps, ReleaseDC, VERTRES};
+        use windows_sys::Win32::UI::WindowsAndMessaging::{SystemParametersInfoW, SPI_GETWORKAREA};
 
         unsafe {
             // Get device context for the entire screen
@@ -15,16 +15,16 @@ pub fn get_taskbar_height() -> Option<i32> {
 
             // Get screen height
             let screen_height = GetDeviceCaps(hdc, VERTRES.try_into().unwrap());
-            
+
             // Release DC when done
             ReleaseDC(std::ptr::null_mut(), hdc);
 
             // Get work area (screen minus taskbar)
-            let mut rect = RECT { 
-                left: 0, 
-                top: 0, 
-                right: 0, 
-                bottom: 0 
+            let mut rect = RECT {
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
             };
 
             let result = SystemParametersInfoW(
@@ -48,7 +48,7 @@ pub fn get_taskbar_height() -> Option<i32> {
     {
         // macOS implementation using Cocoa
         use objc2::rc::Id;
-        use objc2_app_kit::{NSScreen, NSApplication};
+        use objc2_app_kit::{NSApplication, NSScreen};
         use objc2_foundation::NSArray;
 
         unsafe {
@@ -61,7 +61,7 @@ pub fn get_taskbar_height() -> Option<i32> {
             if let Some(main_screen) = screens.first() {
                 let frame = main_screen.frame();
                 let visible_frame = main_screen.visibleFrame();
-                
+
                 // Taskbar height is the difference
                 let taskbar_height = (frame.size.height - visible_frame.size.height) as i32;
                 Some(taskbar_height)
@@ -103,18 +103,20 @@ pub fn get_taskbar_height() -> Option<i32> {
 #[tauri::command]
 pub fn get_bottom_position(window_height: f64) -> (f64, f64) {
     let taskbar_height = get_taskbar_height().unwrap_or(40) as f64;
-    
+
     #[cfg(target_os = "windows")]
     {
-        use windows_sys::Win32::Graphics::Gdi::{GetDeviceCaps, GetDC, ReleaseDC, HORZRES, VERTRES};
-        
+        use windows_sys::Win32::Graphics::Gdi::{
+            GetDC, GetDeviceCaps, ReleaseDC, HORZRES, VERTRES,
+        };
+
         unsafe {
             let hdc = GetDC(std::ptr::null_mut());
             if !hdc.is_null() {
                 let screen_width = GetDeviceCaps(hdc, HORZRES.try_into().unwrap()) as f64;
                 let screen_height = GetDeviceCaps(hdc, VERTRES.try_into().unwrap()) as f64;
                 ReleaseDC(std::ptr::null_mut(), hdc);
-                
+
                 let x = 0.0; // Left edge
                 let y = screen_height - window_height - taskbar_height;
                 return (x, y);
@@ -128,20 +130,18 @@ pub fn get_bottom_position(window_height: f64) -> (f64, f64) {
 
 #[cfg(target_os = "windows")]
 use windows_sys::Win32::{
-    Foundation::{HWND, BOOL, LPARAM},
-    UI::WindowsAndMessaging::{
-        SetWindowPos, EnumWindows, GetWindowTextW, GetWindowThreadProcessId,
-        HWND_TOPMOST, HWND_NOTOPMOST, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW,
-        SWP_NOACTIVATE
-    },
+    Foundation::{BOOL, HWND, LPARAM},
     System::Threading::GetCurrentProcessId,
+    UI::WindowsAndMessaging::{
+        EnumWindows, GetWindowTextW, GetWindowThreadProcessId, SetWindowPos, HWND_NOTOPMOST,
+        HWND_TOPMOST, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW,
+    },
 };
-
 
 #[cfg(target_os = "windows")]
 pub fn force_topmost(hwnd: *mut std::ffi::c_void) {
-    use windows_sys::Win32::UI::WindowsAndMessaging::*;
     use windows_sys::Win32::Foundation::BOOL;
+    use windows_sys::Win32::UI::WindowsAndMessaging::*;
 
     unsafe {
         // Đặt topmost
@@ -168,7 +168,10 @@ pub fn remove_topmost(hwnd: isize) {
         SetWindowPos(
             hwnd as HWND,
             HWND_NOTOPMOST,
-            0, 0, 0, 0,
+            0,
+            0,
+            0,
+            0,
             SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
         );
     }
@@ -183,12 +186,13 @@ static mut TARGET_TITLE: Vec<u16> = Vec::new();
 unsafe extern "system" fn enum_windows_proc(hwnd: HWND, _lparam: LPARAM) -> BOOL {
     let mut buffer = [0u16; 256];
     let len = GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
-    
+
     if len > 0 {
         let window_title_slice = &buffer[0..len as usize];
-        
+
         // Compare with target title
-        if window_title_slice.len() == TARGET_TITLE.len() - 1 { // -1 for null terminator
+        if window_title_slice.len() == TARGET_TITLE.len() - 1 {
+            // -1 for null terminator
             let mut matches = true;
             for i in 0..window_title_slice.len() {
                 if window_title_slice[i] != TARGET_TITLE[i] {
@@ -196,7 +200,7 @@ unsafe extern "system" fn enum_windows_proc(hwnd: HWND, _lparam: LPARAM) -> BOOL
                     break;
                 }
             }
-            
+
             if matches {
                 // Check if it belongs to our process
                 let mut process_id = 0;
@@ -216,9 +220,9 @@ pub fn find_window_by_title(title: &str) -> Option<isize> {
     unsafe {
         FOUND_HWND = 0 as HWND;
         TARGET_TITLE = title.encode_utf16().chain(std::iter::once(0)).collect();
-        
+
         EnumWindows(Some(enum_windows_proc), 0);
-        
+
         if FOUND_HWND != 0 as HWND {
             Some(FOUND_HWND as isize)
         } else {
@@ -250,7 +254,7 @@ pub fn set_window_topmost(window_title: String) -> bool {
     }
 }
 
-#[tauri::command] 
+#[tauri::command]
 pub fn remove_window_topmost(window_title: String) -> bool {
     #[cfg(target_os = "windows")]
     {

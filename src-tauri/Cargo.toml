@@ -25,6 +25,7 @@ tauri = { version = "2.7.0", features = [ "tray-icon" ] }
 tauri-plugin-log = "2"
 # windows-sys = "0.60.2"
 raw-window-handle = "0.6.2"
+tauri-plugin-store = "2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-positioner = "2"

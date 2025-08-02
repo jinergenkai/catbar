@@ -1,18 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Icon } from "@iconify/react";
-import { useSettingsStore } from "@/store/settingsStore";
+import { useSettings } from "@/store/settings.sync";
+
 export default function GeneralSettings() {
   const {
-    barSize, setBarSize,
-    language, setLanguage,
-    theme, setTheme,
-    autoExpand, setAutoExpand,
-    startWithWindows, setStartWithWindows,
-  } = useSettingsStore();
+    settings,
+    setBarSize,
+    setLanguage,
+    setTheme,
+    setAutoExpand,
+    setStartWithWindows,
+  } = useSettings();
 
   return (
     <div id="general" className="space-y-4 mb-8">
@@ -28,7 +29,7 @@ export default function GeneralSettings() {
             </div>
           </div>
           <Select
-            value={theme}
+            value={settings.theme}
             onValueChange={(value: "dark" | "light" | "system") => {
               setTheme(value);
             }}>
@@ -68,7 +69,7 @@ export default function GeneralSettings() {
               <div className="text-sm text-muted-foreground">Chọn ngôn ngữ hiển thị</div>
             </div>
           </div>
-          <Select value={language} onValueChange={setLanguage}>
+          <Select value={settings.language} onValueChange={setLanguage}>
             <SelectTrigger className="w-[160px]">
               <SelectValue />
             </SelectTrigger>
@@ -90,7 +91,7 @@ export default function GeneralSettings() {
             </div>
           </div>
           <Switch
-            checked={startWithWindows}
+            checked={settings.startWithWindows}
             onCheckedChange={setStartWithWindows}
           />
         </div>
@@ -106,7 +107,7 @@ export default function GeneralSettings() {
             </div>
           </div>
           <Slider
-            value={[barSize]}
+            value={[settings.barSize]}
             onValueChange={([value]) => setBarSize(value)}
             max={100}
             step={1}
@@ -125,7 +126,7 @@ export default function GeneralSettings() {
             </div>
           </div>
           <Switch
-            checked={autoExpand}
+            checked={settings.autoExpand}
             onCheckedChange={setAutoExpand}
           />
         </div>

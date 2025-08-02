@@ -1,9 +1,6 @@
 #[cfg(target_os = "windows")]
 use windows_sys::Win32::{
-    Foundation::*,
-    UI::WindowsAndMessaging::*,
-    System::Threading::*,
-    Graphics::Gdi::*,
+    Foundation::*, Graphics::Gdi::*, System::Threading::*, UI::WindowsAndMessaging::*,
 };
 
 #[cfg(target_os = "windows")]
@@ -21,10 +18,7 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
     unsafe {
         APP_HWND = hwnd as HWND;
         let class_name: Vec<u16> = "Shell_TrayWnd\0".encode_utf16().collect();
-        TASKBAR_HWND = FindWindowW(
-            class_name.as_ptr(),
-            std::ptr::null(),
-        );
+        TASKBAR_HWND = FindWindowW(class_name.as_ptr(), std::ptr::null());
 
         if TASKBAR_HWND == std::ptr::null_mut() {
             return Err("Cannot find taskbar HWND".into());
@@ -33,25 +27,32 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
         // Ưu tiên cao nhất
         SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
 
-       // 1. Set window styles để hoàn toàn invisible với system
+        // 1. Set window styles để hoàn toàn invisible với system
         // let current_style = GetWindowLongW(APP_HWND, GWL_STYLE);
-        // SetWindowLongW(APP_HWND, GWL_STYLE, 
+        // SetWindowLongW(APP_HWND, GWL_STYLE,
         //     WS_POPUP as i32 | WS_VISIBLE as i32); // Chỉ POPUP + VISIBLE
-            
+
         // let current_ex_style = GetWindowLongW(APP_HWND, GWL_EXSTYLE);
-        // SetWindowLongW(APP_HWND, GWL_EXSTYLE, 
-        //     current_ex_style | 
+        // SetWindowLongW(APP_HWND, GWL_EXSTYLE,
+        //     current_ex_style |
         //     WS_EX_TOPMOST as i32 |      // Luôn on top
         //     WS_EX_NOACTIVATE as i32 |   // Không steal focus
         //     WS_EX_TOOLWINDOW as i32 |   // Ẩn khỏi taskbar và Alt+Tab
         //     WS_EX_LAYERED as i32        // Cho phép transparency effects
         // );
-        
+
         // 2. Set transparency (có thể điều chỉnh)
         // SetLayeredWindowAttributes(APP_HWND, 0, 255, LWA_ALPHA); // Đặt opacity tối đa để hiển thị rõ UI
-        
-        SetWindowPos(APP_HWND, HWND_TOPMOST, 0, 0, 0, 0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+
+        SetWindowPos(
+            APP_HWND,
+            HWND_TOPMOST,
+            0,
+            0,
+            0,
+            0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW,
+        );
 
         std::thread::spawn(|| {
             // unsafe { monitor_foreground_and_taskbar(); }
@@ -83,7 +84,10 @@ fn monitor_fullscreen_apps() {
                 SetWindowPos(
                     APP_HWND,
                     HWND_TOPMOST,
-                    0, 0, 0, 0,
+                    0,
+                    0,
+                    0,
+                    0,
                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS,
                 );
             }
@@ -92,7 +96,6 @@ fn monitor_fullscreen_apps() {
         }
     }
 }
-
 
 #[cfg(target_os = "windows")]
 unsafe fn monitor_foreground_and_taskbar() {
@@ -115,8 +118,15 @@ unsafe fn monitor_foreground_and_taskbar() {
                 }
 
                 if is_taskbar_related(fg_hwnd) {
-                    SetWindowPos(APP_HWND, HWND_TOPMOST, 0, 0, 0, 0,
-                        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+                    SetWindowPos(
+                        APP_HWND,
+                        HWND_TOPMOST,
+                        0,
+                        0,
+                        0,
+                        0,
+                        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS,
+                    );
                 }
             }
         }
@@ -137,10 +147,10 @@ unsafe fn is_taskbar_related(hwnd: HWND) -> bool {
         return false;
     }
     let class_str = String::from_utf16_lossy(&class_name[..len as usize]).to_lowercase();
-    class_str.contains("shell_traywnd") ||
-    class_str.contains("button") ||
-    class_str.contains("start") ||
-    class_str.contains("task")
+    class_str.contains("shell_traywnd")
+        || class_str.contains("button")
+        || class_str.contains("start")
+        || class_str.contains("task")
 }
 
 #[cfg(target_os = "windows")]
@@ -149,7 +159,12 @@ unsafe fn is_fullscreen_application(hwnd: HWND) -> bool {
         return false;
     }
 
-    let mut rect = RECT { left: 0, top: 0, right: 0, bottom: 0 };
+    let mut rect = RECT {
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+    };
     if GetWindowRect(hwnd, &mut rect) == 0 {
         return false;
     }
@@ -157,18 +172,28 @@ unsafe fn is_fullscreen_application(hwnd: HWND) -> bool {
     let monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
     let mut info = MONITORINFO {
         cbSize: std::mem::size_of::<MONITORINFO>() as u32,
-        rcMonitor: RECT { left: 0, top: 0, right: 0, bottom: 0 },
-        rcWork: RECT { left: 0, top: 0, right: 0, bottom: 0 },
+        rcMonitor: RECT {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+        },
+        rcWork: RECT {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+        },
         dwFlags: 0,
     };
     if GetMonitorInfoW(monitor, &mut info) == 0 {
         return false;
     }
 
-    let covers_screen = rect.left <= info.rcMonitor.left &&
-                        rect.top <= info.rcMonitor.top &&
-                        rect.right >= info.rcMonitor.right &&
-                        rect.bottom >= info.rcMonitor.bottom;
+    let covers_screen = rect.left <= info.rcMonitor.left
+        && rect.top <= info.rcMonitor.top
+        && rect.right >= info.rcMonitor.right
+        && rect.bottom >= info.rcMonitor.bottom;
 
     let style = GetWindowLongW(hwnd, GWL_STYLE) as u32;
     let is_borderless = (style & WS_CAPTION == 0) && (style & WS_THICKFRAME == 0);
@@ -178,12 +203,7 @@ unsafe fn is_fullscreen_application(hwnd: HWND) -> bool {
 
 #[cfg(target_os = "windows")]
 extern "system" {
-    fn SetLayeredWindowAttributes(
-        hwnd: HWND,
-        crKey: u32,
-        bAlpha: u8,
-        dwFlags: u32,
-    ) -> BOOL;
+    fn SetLayeredWindowAttributes(hwnd: HWND, crKey: u32, bAlpha: u8, dwFlags: u32) -> BOOL;
 }
 
 #[cfg(target_os = "windows")]
