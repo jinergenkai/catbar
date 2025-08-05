@@ -1,19 +1,17 @@
-#[cfg(target_os = "windows")]
 use windows_sys::Win32::{
-    Foundation::*, Graphics::Gdi::*, System::Threading::*, UI::WindowsAndMessaging::*,
+    Foundation::*, 
+    Graphics::Gdi::*, 
+    System::Threading::*, 
+    UI::WindowsAndMessaging::*,
 };
 
-#[cfg(target_os = "windows")]
 use std::ffi::c_void;
 
-#[cfg(target_os = "windows")]
 static mut APP_HWND: HWND = std::ptr::null_mut();
-#[cfg(target_os = "windows")]
 static mut TASKBAR_HWND: HWND = std::ptr::null_mut();
-#[cfg(target_os = "windows")]
 static mut IS_FULLSCREEN_APP_ACTIVE: bool = false;
 
-#[cfg(target_os = "windows")]
+/// Setup smart overlay behavior for a window
 pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::Error>> {
     unsafe {
         APP_HWND = hwnd as HWND;
@@ -24,25 +22,8 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
             return Err("Cannot find taskbar HWND".into());
         }
 
-        // Ưu tiên cao nhất
+        // Set highest priority
         SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
-
-        // 1. Set window styles để hoàn toàn invisible với system
-        // let current_style = GetWindowLongW(APP_HWND, GWL_STYLE);
-        // SetWindowLongW(APP_HWND, GWL_STYLE,
-        //     WS_POPUP as i32 | WS_VISIBLE as i32); // Chỉ POPUP + VISIBLE
-
-        // let current_ex_style = GetWindowLongW(APP_HWND, GWL_EXSTYLE);
-        // SetWindowLongW(APP_HWND, GWL_EXSTYLE,
-        //     current_ex_style |
-        //     WS_EX_TOPMOST as i32 |      // Luôn on top
-        //     WS_EX_NOACTIVATE as i32 |   // Không steal focus
-        //     WS_EX_TOOLWINDOW as i32 |   // Ẩn khỏi taskbar và Alt+Tab
-        //     WS_EX_LAYERED as i32        // Cho phép transparency effects
-        // );
-
-        // 2. Set transparency (có thể điều chỉnh)
-        // SetLayeredWindowAttributes(APP_HWND, 0, 255, LWA_ALPHA); // Đặt opacity tối đa để hiển thị rõ UI
 
         SetWindowPos(
             APP_HWND,
@@ -55,7 +36,6 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
         );
 
         std::thread::spawn(|| {
-            // unsafe { monitor_foreground_and_taskbar(); }
             monitor_fullscreen_apps();
         });
 
@@ -63,7 +43,6 @@ pub fn setup_smart_overlay(hwnd: *mut c_void) -> Result<(), Box<dyn std::error::
     }
 }
 
-#[cfg(target_os = "windows")]
 fn monitor_fullscreen_apps() {
     unsafe {
         loop {
@@ -97,45 +76,6 @@ fn monitor_fullscreen_apps() {
     }
 }
 
-#[cfg(target_os = "windows")]
-unsafe fn monitor_foreground_and_taskbar() {
-    let mut last_hwnd: HWND = std::ptr::null_mut();
-
-    loop {
-        let fg_hwnd = GetForegroundWindow();
-        if fg_hwnd != last_hwnd {
-            last_hwnd = fg_hwnd;
-
-            if is_fullscreen_application(fg_hwnd) {
-                if !IS_FULLSCREEN_APP_ACTIVE {
-                    IS_FULLSCREEN_APP_ACTIVE = true;
-                    ShowWindow(APP_HWND, SW_HIDE);
-                }
-            } else {
-                if IS_FULLSCREEN_APP_ACTIVE {
-                    IS_FULLSCREEN_APP_ACTIVE = false;
-                    ShowWindow(APP_HWND, SW_SHOW);
-                }
-
-                if is_taskbar_related(fg_hwnd) {
-                    SetWindowPos(
-                        APP_HWND,
-                        HWND_TOPMOST,
-                        0,
-                        0,
-                        0,
-                        0,
-                        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS,
-                    );
-                }
-            }
-        }
-
-        std::thread::sleep(std::time::Duration::from_millis(50));
-    }
-}
-
-#[cfg(target_os = "windows")]
 unsafe fn is_taskbar_related(hwnd: HWND) -> bool {
     if hwnd == TASKBAR_HWND {
         return true;
@@ -153,7 +93,6 @@ unsafe fn is_taskbar_related(hwnd: HWND) -> bool {
         || class_str.contains("task")
 }
 
-#[cfg(target_os = "windows")]
 unsafe fn is_fullscreen_application(hwnd: HWND) -> bool {
     if hwnd == GetDesktopWindow() || hwnd == TASKBAR_HWND {
         return false;
@@ -201,10 +140,8 @@ unsafe fn is_fullscreen_application(hwnd: HWND) -> bool {
     covers_screen && is_borderless
 }
 
-#[cfg(target_os = "windows")]
 extern "system" {
     fn SetLayeredWindowAttributes(hwnd: HWND, crKey: u32, bAlpha: u8, dwFlags: u32) -> BOOL;
 }
 
-#[cfg(target_os = "windows")]
 const LWA_ALPHA: u32 = 0x2;
